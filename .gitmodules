@@ -1,0 +1,9 @@
+[submodule "roles/clickhouse"]
+        path = roles/clickhouse
+        url = git@github.com:AlexeySetevoi/ansible-clickhouse.git
+[submodule "roles/lighthouse-role"]
+	path = roles/lighthouse-role
+	url = https://github.com/igromchenko/lighthouse-role.git
+[submodule "roles/vector-role"]
+	path = roles/vector-role
+	url = https://github.com/igromchenko/vector-role.git

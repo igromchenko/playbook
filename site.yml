@@ -1,0 +1,37 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse
+  user: centos
+  vars:
+    clickhouse_listen_host:
+      - "::"
+    clickhouse_networks_default:
+      - "::/0"
+    clickhouse_dbs_custom:
+      - { name: logs }
+  roles:
+    - clickhouse
+  tasks:
+    - name: Create table
+      ansible.builtin.command: "clickhouse-client -q 'CREATE TABLE logs.vector (message String) ENGINE = MergeTree() ORDER BY tuple();'"
+      register: create_table
+      failed_when: create_table.rc != 0 and create_table.rc !=57
+      changed_when: create_table.rc == 0
+
+- name: Install Vector
+  hosts: vector
+  user: centos
+  become: true
+  vars:
+    vector_version: "0.31.0"
+    clickhouse_host: "{{ hostvars['clickhouse'].ansible_host }}"
+  roles:
+    - vector-role
+
+- name: Install Lighthouse
+  hosts: lighthouse
+  user: centos
+  vars:
+    clickhouse_host: "{{ hostvars['clickhouse'].ansible_host }}"
+  roles:
+    - lighthouse-role
